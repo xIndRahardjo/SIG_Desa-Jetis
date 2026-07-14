@@ -48,13 +48,21 @@ module.exports = async function handler(req, res) {
   // Handle POST (Tambah, Edit, Hapus)
   if (req.method === 'POST') {
     try {
-      const payload = req.body;
+      // Pastikan payload berupa object, kadang Vercel tidak mem-parse otomatis
+      let payload = req.body;
+      if (typeof payload === 'string') {
+        try { payload = JSON.parse(payload); } catch (e) {}
+      }
+
       const { action, token, jenis } = payload;
 
       // Validasi Token Admin
       const realToken = process.env.ADMIN_TOKEN;
       if (!realToken || token !== realToken) {
-        return res.status(401).json({ ok: false, error: 'Token akses salah atau tidak diatur di server.' });
+        return res.status(401).json({ 
+          ok: false, 
+          error: `Token akses salah. (Server env: ${realToken ? 'ada' : 'kosong'}, Input: ${token || 'kosong'})` 
+        });
       }
 
       if (payload._test) {
