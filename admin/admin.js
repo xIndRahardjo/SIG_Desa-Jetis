@@ -9,7 +9,7 @@
  * 3. Copy URL deployment ke variabel BACKEND_URL di bawah
  * ════════════════════════════════════════════════════════════════
  */
-const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbxR7sHEGlCjYR0kNFirvm_Wg7Anw9RQrh2GKkndwOsWYpam2u9ZDcLbgZixjPHwGACXeg/exec'; // Contoh: 'https://script.google.com/macros/s/ABC123.../exec'
+const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbwaVis_FcwOZhynXuhVZN9i-17j38DD_OQv18u64MA3nydmMAYS-XyIE40KPVGvrBi0/exec'; // Contoh: 'https://script.google.com/macros/s/ABC123.../exec'
 
 /* ──────────────────────────────────────────────────────────────
    KONSTANTA KATEGORI
