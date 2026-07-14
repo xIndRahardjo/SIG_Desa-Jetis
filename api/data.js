@@ -56,12 +56,13 @@ module.exports = async function handler(req, res) {
 
       const { action, token, jenis } = payload;
 
-      // Validasi Token Admin
-      const realToken = process.env.ADMIN_TOKEN;
-      if (!realToken || token !== realToken) {
+      // Validasi Token Admin (Di-hardcode agar tidak perlu setting Vercel Env Var)
+      const realToken = 'bbk8jetis1';
+      
+      if (token !== realToken) {
         return res.status(401).json({ 
           ok: false, 
-          error: `Token akses salah. (Server env: ${realToken ? 'ada' : 'kosong'}, Input: ${token || 'kosong'})` 
+          error: `Token akses salah. Silakan coba lagi.` 
         });
       }
 
