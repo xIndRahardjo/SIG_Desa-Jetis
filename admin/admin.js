@@ -84,57 +84,19 @@ function checkBackendUrl() {
    ────────────────────────────────────────────────────────────── */
 function initLoginForm() {
   const form = document.getElementById('loginForm');
-  form.addEventListener('submit', async (e) => {
+  form.addEventListener('submit', (e) => {
     e.preventDefault();
     const token = document.getElementById('inputToken').value.trim();
-    const errorEl = document.getElementById('loginError');
     const btn = document.getElementById('btnLogin');
 
     if (!token) return;
 
-    btn.disabled = true;
-    btn.textContent = 'Memeriksa...';
-
-    // Verifikasi token dengan hit backend
-    if (!BACKEND_URL) {
-      // Mode demo offline — token default untuk testing lokal
-      if (token === 'JetisAdmin2025!') {
-        adminToken = token;
-        sessionStorage.setItem('adminToken', token);
-        showDashboard();
-      } else {
-        showLoginError(errorEl);
-      }
-      btn.disabled = false;
-      btn.textContent = 'Masuk →';
-      return;
-    }
-
-    try {
-      const res = await apiFetch('getData');
-      // Jika bisa ambil data, berarti URL valid; validasi token dengan POST dummy
-      const testRes = await apiPost({ action: 'tambah', token: token, _test: true });
-      // Jika error "Field wajib diisi" berarti token valid
-      if (testRes.ok || testRes.error?.includes('Field')) {
-        adminToken = token;
-        sessionStorage.setItem('adminToken', token);
-        showDashboard();
-      } else {
-        showLoginError(errorEl);
-      }
-    } catch {
-      // Jika offline, fallback ke token hardcode
-      if (token === 'JetisAdmin2025!') {
-        adminToken = token;
-        sessionStorage.setItem('adminToken', token);
-        showDashboard();
-      } else {
-        showLoginError(errorEl);
-      }
-    } finally {
-      btn.disabled = false;
-      btn.textContent = 'Masuk →';
-    }
+    // Token langsung diterima dan disimpan di session.
+    // Backend (GAS) akan menolak operasi tambah/edit/hapus jika token salah.
+    // Pendekatan ini menghindari masalah CORS/redirect GAS saat verifikasi awal.
+    adminToken = token;
+    sessionStorage.setItem('adminToken', token);
+    showDashboard();
   });
 }
 
