@@ -1,7 +1,14 @@
 /**
  * app.js — Logic Utama SIG Desa Jetis
  * Mengelola peta Leaflet, layer, popup, sidebar, filter, dan legenda.
+ *
+ * ── DATA DINAMIS ──────────────────────────────────────────────
+ * URL backend Google Apps Script untuk membaca data yang ditambah
+ * oleh admin desa. Isi dengan URL deployment GAS Anda.
+ * Jika kosong (''), fitur data dinamis dinonaktifkan secara otomatis.
+ * ─────────────────────────────────────────────────────────────
  */
+const BACKEND_URL_PUBLIC = ''; // Contoh: 'https://script.google.com/macros/s/ABC.../exec'
 
 /* ================================================================
    STATE
@@ -9,6 +16,7 @@
 let map;
 let potensiLayer;
 let lingkunganLayer;
+let dynamicLayer = null;   // Layer data yang ditambah via panel admin
 let activeLayer = 'potensi'; // 'potensi' | 'lingkungan'
 let activeFilter = 'Semua';
 let activeDusunId = null;
@@ -25,6 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderLegend();
   initLayerToggle();
   initMobileControls();
+  loadDynamicData(); // Muat data dari panel admin (non-blocking)
   hideLoading();
 });
 
@@ -597,6 +606,106 @@ function closeSidebarMobile() {
     sidebar.classList.remove('open');
     toggle.innerHTML = '<span class="icon">📋</span> Daftar Dusun';
   }
+}
+
+/* ================================================================
+   DATA DINAMIS ADMIN — Memuat lokasi yang ditambah via panel admin
+   ================================================================ */
+async function loadDynamicData() {
+  if (!BACKEND_URL_PUBLIC) return; // Backend belum dikonfigurasi, skip
+
+  try {
+    const url = `${BACKEND_URL_PUBLIC}?action=getData&_t=${Date.now()}`;
+    const res = await fetch(url, { redirect: 'follow' });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json = await res.json();
+
+    if (!json.ok || !json.data) return;
+
+    const { potensi, lingkungan } = json.data;
+
+    // Gabungkan fitur dari kedua koleksi ke satu layer dinamis
+    const allFeatures = [
+      ...(potensi?.features    || []),
+      ...(lingkungan?.features || [])
+    ];
+
+    if (allFeatures.length === 0) return;
+
+    if (dynamicLayer) map.removeLayer(dynamicLayer);
+
+    dynamicLayer = L.geoJSON(
+      { type: 'FeatureCollection', features: allFeatures },
+      {
+        pointToLayer: createDynamicMarker,
+        onEachFeature: onEachDynamicFeature
+      }
+    ).addTo(map);
+
+  } catch (err) {
+    // Gagal fetch data dinamis — tidak mempengaruhi peta statis
+    console.warn('[SIG] Data dinamis tidak dapat dimuat:', err.message);
+  }
+}
+
+function createDynamicMarker(feature, latlng) {
+  const jenis = feature.properties._jenis || 'potensi';
+  const isLingkungan = jenis === 'lingkungan';
+  const color = isLingkungan ? '#f97316' : '#7c3aed';
+
+  return L.circleMarker(latlng, {
+    radius: 10,
+    fillColor: color,
+    fillOpacity: 0.80,
+    color: '#ffffff',
+    weight: 2.5,
+    opacity: 0.95
+  });
+}
+
+function onEachDynamicFeature(feature, layer) {
+  const p = feature.properties;
+  const jenis = p._jenis || 'potensi';
+  const isLingkungan = jenis === 'lingkungan';
+
+  const nama       = escHtml(p.judul || p.nama_lokasi || '(tanpa nama)');
+  const kategori   = escHtml(p.kategori || p.jenis_potensi || p.jenis_isu || '-');
+  const keterangan = escHtml(p.keterangan || p.deskripsi || '');
+  const labelJenis = isLingkungan ? '⚠️ Isu Lingkungan' : '🌾 Potensi Produksi';
+  const warna      = isLingkungan ? '#f97316' : '#7c3aed';
+
+  let extra = '';
+  if (isLingkungan && p.status)      extra += `<div class="popup__row"><span class="popup__label">Status</span><span class="popup__value">${escHtml(p.status)}</span></div>`;
+  if (isLingkungan && p.rekomendasi) extra += `<div class="popup__row"><span class="popup__label">Rekomendasi</span><span class="popup__value">${escHtml(p.rekomendasi)}</span></div>`;
+  if (!isLingkungan && p.skor_kelayakan) extra += `<div class="popup__row"><span class="popup__label">Skor</span><span class="popup__value">${escHtml(p.skor_kelayakan)}</span></div>`;
+
+  const popupHtml = `
+    <div class="popup">
+      <div class="popup__header">
+        <div class="popup__title">${nama}</div>
+        <div class="popup__badges">
+          <span class="popup__badge" style="background:${warna}">${labelJenis}</span>
+          <span class="popup__skor-badge">${kategori}</span>
+        </div>
+      </div>
+      <div class="popup__body">
+        <div class="popup__row">
+          <span class="popup__label">Keterangan</span>
+          <span class="popup__value">${keterangan}</span>
+        </div>
+        ${extra}
+        <div class="popup__row" style="opacity:.55;font-size:11px;margin-top:4px">
+          📍 Ditambahkan via Panel Admin
+        </div>
+      </div>
+    </div>`;
+
+  layer.bindPopup(popupHtml, { maxWidth: 300, className: 'custom-popup' });
+
+  layer.on({
+    mouseover: (e) => e.target.setStyle({ radius: 14, fillOpacity: 0.95, weight: 3 }),
+    mouseout:  (e) => e.target.setStyle({ radius: 10, fillOpacity: 0.80, weight: 2.5 })
+  });
 }
 
 /* ================================================================
