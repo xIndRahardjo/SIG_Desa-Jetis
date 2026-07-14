@@ -610,7 +610,11 @@ async function apiPost(payload) {
   try {
     const res = await fetch(BACKEND_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      // PENTING: Gunakan 'text/plain' bukan 'application/json'.
+      // GAS tidak support CORS preflight (OPTIONS), yang otomatis dipicu
+      // browser saat Content-Type: application/json. Dengan text/plain,
+      // browser langsung POST tanpa preflight. GAS tetap bisa parse JSON-nya.
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify(payload),
       redirect: 'follow'
     });
