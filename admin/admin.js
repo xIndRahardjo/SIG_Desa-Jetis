@@ -308,7 +308,7 @@ async function loadDaftar() {
 
   if (!result.ok) {
     showDaftarState('empty');
-    showToast('⚠️ Gagal memuat data. Periksa koneksi internet.', 'error');
+    showToast(`⚠️ Gagal memuat data: ${result.error}`, 'error');
     return;
   }
 
