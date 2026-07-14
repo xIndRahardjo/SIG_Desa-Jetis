@@ -8,7 +8,7 @@
  * Jika kosong (''), fitur data dinamis dinonaktifkan secara otomatis.
  * ─────────────────────────────────────────────────────────────
  */
-const BACKEND_URL_PUBLIC = ''; // Contoh: 'https://script.google.com/macros/s/ABC.../exec'
+const BACKEND_URL_PUBLIC = 'https://script.google.com/macros/s/AKfycbxR7sHEGlCjYR0kNFirvm_Wg7Anw9RQrh2GKkndwOsWYpam2u9ZDcLbgZixjPHwGACXeg/exec'; // Contoh: 'https://script.google.com/macros/s/ABC.../exec'
 
 /* ================================================================
    STATE
@@ -626,7 +626,7 @@ async function loadDynamicData() {
 
     // Gabungkan fitur dari kedua koleksi ke satu layer dinamis
     const allFeatures = [
-      ...(potensi?.features    || []),
+      ...(potensi?.features || []),
       ...(lingkungan?.features || [])
     ];
 
@@ -668,14 +668,14 @@ function onEachDynamicFeature(feature, layer) {
   const jenis = p._jenis || 'potensi';
   const isLingkungan = jenis === 'lingkungan';
 
-  const nama       = escHtml(p.judul || p.nama_lokasi || '(tanpa nama)');
-  const kategori   = escHtml(p.kategori || p.jenis_potensi || p.jenis_isu || '-');
+  const nama = escHtml(p.judul || p.nama_lokasi || '(tanpa nama)');
+  const kategori = escHtml(p.kategori || p.jenis_potensi || p.jenis_isu || '-');
   const keterangan = escHtml(p.keterangan || p.deskripsi || '');
   const labelJenis = isLingkungan ? '⚠️ Isu Lingkungan' : '🌾 Potensi Produksi';
-  const warna      = isLingkungan ? '#f97316' : '#7c3aed';
+  const warna = isLingkungan ? '#f97316' : '#7c3aed';
 
   let extra = '';
-  if (isLingkungan && p.status)      extra += `<div class="popup__row"><span class="popup__label">Status</span><span class="popup__value">${escHtml(p.status)}</span></div>`;
+  if (isLingkungan && p.status) extra += `<div class="popup__row"><span class="popup__label">Status</span><span class="popup__value">${escHtml(p.status)}</span></div>`;
   if (isLingkungan && p.rekomendasi) extra += `<div class="popup__row"><span class="popup__label">Rekomendasi</span><span class="popup__value">${escHtml(p.rekomendasi)}</span></div>`;
   if (!isLingkungan && p.skor_kelayakan) extra += `<div class="popup__row"><span class="popup__label">Skor</span><span class="popup__value">${escHtml(p.skor_kelayakan)}</span></div>`;
 
@@ -704,7 +704,7 @@ function onEachDynamicFeature(feature, layer) {
 
   layer.on({
     mouseover: (e) => e.target.setStyle({ radius: 14, fillOpacity: 0.95, weight: 3 }),
-    mouseout:  (e) => e.target.setStyle({ radius: 10, fillOpacity: 0.80, weight: 2.5 })
+    mouseout: (e) => e.target.setStyle({ radius: 10, fillOpacity: 0.80, weight: 2.5 })
   });
 }
 

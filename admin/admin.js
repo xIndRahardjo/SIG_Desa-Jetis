@@ -9,7 +9,7 @@
  * 3. Copy URL deployment ke variabel BACKEND_URL di bawah
  * ════════════════════════════════════════════════════════════════
  */
-const BACKEND_URL = ''; // Contoh: 'https://script.google.com/macros/s/ABC123.../exec'
+const BACKEND_URL = '1aIa4aJKKVAnjEPZJm0kEFf0KMfCBJXEEXeHhf5VcfLshttps://script.google.com/macros/s/AKfycbxR7sHEGlCjYR0kNFirvm_Wg7Anw9RQrh2GKkndwOsWYpam2u9ZDcLbgZixjPHwGACXeg/exec'; // Contoh: 'https://script.google.com/macros/s/ABC123.../exec'
 
 /* ──────────────────────────────────────────────────────────────
    KONSTANTA KATEGORI
@@ -43,9 +43,9 @@ const BOUNDS = {
 let adminToken = '';
 let miniMapMain = null;      // Leaflet map di form tambah
 let miniMapEdit = null;      // Leaflet map di modal edit
-let markerMain  = null;      // Marker di peta tambah
-let markerEdit  = null;      // Marker di peta edit
-let allData     = { potensi: [], lingkungan: [] };
+let markerMain = null;      // Marker di peta tambah
+let markerEdit = null;      // Marker di peta edit
+let allData = { potensi: [], lingkungan: [] };
 let hapusTarget = null;      // { id, jenis, nama } — antrian hapus
 let currentFilter = 'semua';
 
@@ -273,21 +273,21 @@ function updateKategoriOptions(formType, jenis) {
 }
 
 function updateFieldVisibility(jenis) {
-  document.getElementById('fieldPotensi').style.display    = jenis === 'potensi'    ? '' : 'none';
+  document.getElementById('fieldPotensi').style.display = jenis === 'potensi' ? '' : 'none';
   document.getElementById('fieldLingkungan').style.display = jenis === 'lingkungan' ? '' : 'none';
 }
 
 async function handleSubmitTambah(e) {
   e.preventDefault();
   const form = e.target;
-  const btn  = document.getElementById('btnSubmitTambah');
+  const btn = document.getElementById('btnSubmitTambah');
 
-  const jenis    = document.querySelector('input[name="jenis"]:checked').value;
-  const judul    = document.getElementById('inputJudul').value.trim();
+  const jenis = document.querySelector('input[name="jenis"]:checked').value;
+  const judul = document.getElementById('inputJudul').value.trim();
   const kategori = document.getElementById('selectKategori').value;
   const keterangan = document.getElementById('inputKeterangan').value.trim();
-  const lat      = parseFloat(document.getElementById('inputLat').value);
-  const lng      = parseFloat(document.getElementById('inputLng').value);
+  const lat = parseFloat(document.getElementById('inputLat').value);
+  const lng = parseFloat(document.getElementById('inputLng').value);
 
   // Validasi
   if (!judul) return showToast('❌ Judul lokasi wajib diisi', 'error');
@@ -303,12 +303,12 @@ async function handleSubmitTambah(e) {
   };
 
   if (jenis === 'lingkungan') {
-    payload.dusun            = document.getElementById('inputDusun').value.trim();
+    payload.dusun = document.getElementById('inputDusun').value.trim();
     payload.tingkat_keparahan = document.getElementById('selectKeparahan').value;
-    payload.rekomendasi      = document.getElementById('inputRekomendasi').value.trim();
-    payload.status           = document.getElementById('selectStatus').value;
+    payload.rekomendasi = document.getElementById('inputRekomendasi').value.trim();
+    payload.status = document.getElementById('selectStatus').value;
   } else {
-    payload.skor_kelayakan   = document.getElementById('selectSkor').value;
+    payload.skor_kelayakan = document.getElementById('selectSkor').value;
   }
 
   btn.disabled = true;
@@ -352,10 +352,10 @@ async function loadDaftar() {
   }
 
   const data = result.data || {};
-  const featuresPotensi     = (data.potensi?.features    || []);
-  const featuresLingkungan  = (data.lingkungan?.features || []);
+  const featuresPotensi = (data.potensi?.features || []);
+  const featuresLingkungan = (data.lingkungan?.features || []);
 
-  allData.potensi    = featuresPotensi.map(f => ({ ...f.properties, _coords: f.geometry.coordinates }));
+  allData.potensi = featuresPotensi.map(f => ({ ...f.properties, _coords: f.geometry.coordinates }));
   allData.lingkungan = featuresLingkungan.map(f => ({ ...f.properties, _coords: f.geometry.coordinates }));
 
   renderTabel(currentFilter);
@@ -418,8 +418,8 @@ function renderTabel(filter) {
 
 function showDaftarState(state) {
   document.getElementById('daftarLoading').style.display = state === 'loading' ? '' : 'none';
-  document.getElementById('daftarEmpty').style.display   = state === 'empty'   ? '' : 'none';
-  document.getElementById('daftarTable').style.display   = state === 'table'   ? '' : 'none';
+  document.getElementById('daftarEmpty').style.display = state === 'empty' ? '' : 'none';
+  document.getElementById('daftarTable').style.display = state === 'table' ? '' : 'none';
 }
 
 /* ──────────────────────────────────────────────────────────────
@@ -451,25 +451,25 @@ function bukaModalEdit(id, jenis) {
   const item = dataArr.find(d => String(d.id) === String(id));
   if (!item) { showToast('❌ Data tidak ditemukan', 'error'); return; }
 
-  document.getElementById('editId').value    = id;
+  document.getElementById('editId').value = id;
   document.getElementById('editJenis').value = jenis;
   document.getElementById('editJudul').value = item.judul || item.nama_lokasi || '';
   document.getElementById('editKeterangan').value = item.keterangan || item.deskripsi || '';
 
   updateKategoriOptions('edit', jenis);
   const editKat = document.getElementById('editKategori');
-  const katVal  = item.kategori || item.jenis_potensi || item.jenis_isu || '';
+  const katVal = item.kategori || item.jenis_potensi || item.jenis_isu || '';
   if (katVal) editKat.value = katVal;
 
   // Tampilkan field sesuai jenis
-  document.getElementById('editFieldPotensi').style.display    = jenis === 'potensi'    ? '' : 'none';
+  document.getElementById('editFieldPotensi').style.display = jenis === 'potensi' ? '' : 'none';
   document.getElementById('editFieldLingkungan').style.display = jenis === 'lingkungan' ? '' : 'none';
 
   if (jenis === 'lingkungan') {
-    document.getElementById('editDusun').value      = item.dusun || '';
-    document.getElementById('editKeparahan').value  = item.tingkat_keparahan || 'Sedang';
+    document.getElementById('editDusun').value = item.dusun || '';
+    document.getElementById('editKeparahan').value = item.tingkat_keparahan || 'Sedang';
     document.getElementById('editRekomendasi').value = item.rekomendasi || '';
-    document.getElementById('editStatus').value     = item.status || 'Perlu Penanganan';
+    document.getElementById('editStatus').value = item.status || 'Perlu Penanganan';
   } else {
     document.getElementById('editSkor').value = item.skor_kelayakan || 'Sedang';
   }
@@ -494,7 +494,7 @@ function initMiniMapEdit(lat, lng) {
   if (miniMapEdit) {
     miniMapEdit.remove();
     miniMapEdit = null;
-    markerEdit  = null;
+    markerEdit = null;
     container._leaflet_id = null; // reset leaflet marker
   }
 
@@ -527,10 +527,10 @@ async function handleSubmitEdit(e) {
   e.preventDefault();
   const btn = document.getElementById('btnSubmitEdit');
 
-  const id    = document.getElementById('editId').value;
+  const id = document.getElementById('editId').value;
   const jenis = document.getElementById('editJenis').value;
-  const lat   = parseFloat(document.getElementById('editLat').value);
-  const lng   = parseFloat(document.getElementById('editLng').value);
+  const lat = parseFloat(document.getElementById('editLat').value);
+  const lng = parseFloat(document.getElementById('editLng').value);
 
   if (!isNaN(lat) && !isNaN(lng) && !isKoordinatValid(lat, lng)) {
     return showToast('❌ Koordinat di luar wilayah Desa Jetis', 'error');
@@ -538,18 +538,18 @@ async function handleSubmitEdit(e) {
 
   const payload = {
     action: 'edit', token: adminToken, id, jenis,
-    judul:      document.getElementById('editJudul').value.trim(),
-    kategori:   document.getElementById('editKategori').value,
+    judul: document.getElementById('editJudul').value.trim(),
+    kategori: document.getElementById('editKategori').value,
     keterangan: document.getElementById('editKeterangan').value.trim(),
     lat: isNaN(lat) ? undefined : lat,
     lng: isNaN(lng) ? undefined : lng
   };
 
   if (jenis === 'lingkungan') {
-    payload.dusun             = document.getElementById('editDusun').value.trim();
+    payload.dusun = document.getElementById('editDusun').value.trim();
     payload.tingkat_keparahan = document.getElementById('editKeparahan').value;
-    payload.rekomendasi       = document.getElementById('editRekomendasi').value.trim();
-    payload.status            = document.getElementById('editStatus').value;
+    payload.rekomendasi = document.getElementById('editRekomendasi').value.trim();
+    payload.status = document.getElementById('editStatus').value;
   } else {
     payload.skor_kelayakan = document.getElementById('editSkor').value;
   }
@@ -665,7 +665,7 @@ async function apiPost(payload) {
    ────────────────────────────────────────────────────────────── */
 function isKoordinatValid(lat, lng) {
   return lat >= BOUNDS.latMin && lat <= BOUNDS.latMax &&
-         lng >= BOUNDS.lngMin && lng <= BOUNDS.lngMax;
+    lng >= BOUNDS.lngMin && lng <= BOUNDS.lngMax;
 }
 
 /* ──────────────────────────────────────────────────────────────
