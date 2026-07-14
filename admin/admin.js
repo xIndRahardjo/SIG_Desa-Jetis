@@ -1,15 +1,14 @@
-/**
+/*
  * admin.js — Logic Panel Admin SIG Desa Jetis
  *
  * ════════════════════════════════════════════════════════════════
- * KONFIGURASI WAJIB — Isi setelah deploy Google Apps Script
+ * KONFIGURASI VERCEL
  * ════════════════════════════════════════════════════════════════
- * 1. Buka backend/Code.gs di Google Apps Script
- * 2. Deploy sebagai Web App (lihat README-setup.md)
- * 3. Copy URL deployment ke variabel BACKEND_URL di bawah
+ * 1. URL tidak perlu diisi manual, otomatis mengarah ke '/api/data'
+ * 2. Pastikan Vercel KV sudah aktif dan ENV 'ADMIN_TOKEN' diisi
  * ════════════════════════════════════════════════════════════════
  */
-const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbwaVis_FcwOZhynXuhVZN9i-17j38DD_OQv18u64MA3nydmMAYS-XyIE40KPVGvrBi0/exec'; // Contoh: 'https://script.google.com/macros/s/ABC123.../exec'
+const BACKEND_URL = '/api/data';
 
 /* ──────────────────────────────────────────────────────────────
    KONSTANTA KATEGORI
@@ -601,7 +600,6 @@ async function apiFetch(action) {
 
 async function apiPost(payload) {
   if (!BACKEND_URL) {
-    // Mode demo offline — simulasi sukses
     console.log('[Demo mode] POST payload:', payload);
     if (payload._test) return { ok: false, error: 'Field wajib diisi.' };
     return { ok: true, message: '[Demo] Operasi berhasil (backend belum dikonfigurasi)' };
@@ -610,13 +608,8 @@ async function apiPost(payload) {
   try {
     const res = await fetch(BACKEND_URL, {
       method: 'POST',
-      // PENTING: Gunakan 'text/plain' bukan 'application/json'.
-      // GAS tidak support CORS preflight (OPTIONS), yang otomatis dipicu
-      // browser saat Content-Type: application/json. Dengan text/plain,
-      // browser langsung POST tanpa preflight. GAS tetap bisa parse JSON-nya.
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify(payload),
-      redirect: 'follow'
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
     });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return await res.json();

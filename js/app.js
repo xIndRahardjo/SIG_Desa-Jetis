@@ -3,12 +3,10 @@
  * Mengelola peta Leaflet, layer, popup, sidebar, filter, dan legenda.
  *
  * ── DATA DINAMIS ──────────────────────────────────────────────
- * URL backend Google Apps Script untuk membaca data yang ditambah
- * oleh admin desa. Isi dengan URL deployment GAS Anda.
- * Jika kosong (''), fitur data dinamis dinonaktifkan secara otomatis.
+ * Memanggil API Vercel Serverless Function (/api/data)
  * ─────────────────────────────────────────────────────────────
  */
-const BACKEND_URL_PUBLIC = 'https://script.google.com/macros/s/AKfycbwaVis_FcwOZhynXuhVZN9i-17j38DD_OQv18u64MA3nydmMAYS-XyIE40KPVGvrBi0/exec'; // Contoh: 'https://script.google.com/macros/s/ABC.../exec'
+const BACKEND_URL_PUBLIC = '/api/data';
 
 /* ================================================================
    STATE

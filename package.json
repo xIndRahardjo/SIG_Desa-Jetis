@@ -1,0 +1,24 @@
+{
+  "name": "sig-desa-jetis",
+  "version": "1.0.0",
+  "description": "**Sistem Informasi Geografis (SIG)** untuk pemetaan potensi Sumber Daya Alam dan kapasitas produksi tingkat dusun di **Desa Jetis, Kecamatan Besuki, Kabupaten Situbondo, Jawa Timur**.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xIndRahardjo/SIG_Desa-Jetis.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/xIndRahardjo/SIG_Desa-Jetis/issues"
+  },
+  "homepage": "https://github.com/xIndRahardjo/SIG_Desa-Jetis#readme",
+  "dependencies": {
+    "@upstash/redis": "^1.38.0"
+  }
+}
